@@ -1,4 +1,4 @@
-find django_rest_kegg -name '*_initial.py' -exec rm -f {} \;
+# find django_rest_kegg -name '*_initial.py' -exec rm -f {} \;
 
 rm -rf build dist *.egg-info
 python3 setup.py build sdist bdist_wheel

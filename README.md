@@ -14,7 +14,7 @@ INSTALL_APPS += [
 ]
 
 # the path to store image and conf files
-# KEGG_DB_PATH = './keggdb'
+KEGG_DB_PATH = './keggdb'
 ```
 2 edit `proj/urls.py`
 ```python
@@ -26,7 +26,7 @@ urlpatterns += [
 ## Initialize KEGG Database
 ```bash
 # migarate
-python3 manage.py makemigrations
+# python3 manage.py makemigrations
 python3 manage.py migrate
 
 # download image and conf files for all pathways

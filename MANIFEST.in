@@ -1,0 +1,4 @@
+include requirements.txt
+include django_rest_kegg/version/version.json
+
+global-exclude *_initial.py

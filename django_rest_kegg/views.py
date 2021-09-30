@@ -20,8 +20,7 @@ from django_rest_kegg.models import KEGG_PATHWAY_MODEL
 from django_rest_kegg import utils
 
 
-KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(
-    settings, 'KEGG_BASE_URL') else 'http://rest.kegg.jp'
+KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(settings, 'KEGG_BASE_URL') else 'http://www.kegg.jp'
 
 
 class KEGG_PATHWAY(APIView):

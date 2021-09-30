@@ -98,8 +98,6 @@ class KEGG_PATHWAY(APIView):
             except:
                 print('this color is invalid: {}'.format(color))
 
-        im.save('tmp.png')
-
         file = io.BytesIO()
         im.save(file, format='png')
         file.seek(0)

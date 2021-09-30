@@ -57,10 +57,7 @@ git clone https://www.github.com/suqingdong/django_rest_kegg.git
 
 cd django_rest_kegg/demo
 
-python3 manage.py makemigrations
-# Migrations for 'django_rest_kegg':
-#   django_rest_kegg/migrations/0001_initial.py
-#     - Create model KEGG_PATHWAY_MODEL
+# python3 manage.py makemigrations
 
 python3 manage.py migrate
 # Operations to perform:

@@ -31,6 +31,6 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Topic :: Internet :: Libraries'
+        'Topic :: Software Development :: Libraries',
     ]
 )

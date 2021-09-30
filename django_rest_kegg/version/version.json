@@ -1,0 +1,8 @@
+{
+    "version": "1.0.0",
+    "prog": "django_rest_kegg",
+    "desc": "an application of kegg pathway for django rest framework",
+    "author": "suqingdong",
+    "author_email": "suqingdong1114@gmail.com",
+    "url": "https://github.com/suqingdong/django_rest_kegg"
+}

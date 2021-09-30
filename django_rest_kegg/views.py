@@ -1,6 +1,4 @@
-import re
 import io
-import json
 import base64
 
 import PIL
@@ -8,17 +6,22 @@ from PIL import ImageDraw, ImageColor
 
 from pysvg.structure import Svg, Image
 from pysvg.shape import Rect, Circle
-from pysvg.style import Style
 from pysvg.linking import A
-from pysvg.text import Text
+# from pysvg.style import Style
+# from pysvg.text import Text
 
-
+from django.conf import settings
 from django.http import FileResponse, HttpResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
 
 from django_rest_kegg.models import KEGG_PATHWAY_MODEL
+from django_rest_kegg import utils
+
+
+KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(
+    settings, 'KEGG_BASE_URL') else 'http://rest.kegg.jp'
 
 
 class KEGG_PATHWAY(APIView):
@@ -50,7 +53,7 @@ class KEGG_PATHWAY(APIView):
 
         all_pathways = KEGG_PATHWAY_MODEL.objects.all()
         data = {each.number: each.desc for each in all_pathways}
-        return Response(data)
+        return Response({'total': all_pathways.count(), 'pathways': data})
 
     def response_wrapper(self, obj, gene, ret_type, default_color):
         """
@@ -58,10 +61,10 @@ class KEGG_PATHWAY(APIView):
         ret_type = ret_type or 'png'
         filename = f'{obj.number}.{ret_type}'
         if gene:
-            gene_color = self.parse_gene(gene, default_color)
+            gene_color = utils.parse_gene(gene, default_color)
             if not gene_color:
                 return Response({'error': 'bad gene format'}, status=501)
-            conf_data = list(self.parse_conf(obj.conf))
+            conf_data = list(utils.parse_conf(obj.conf))
 
             file = self.build_png(obj.image, conf_data, gene_color)
 
@@ -75,7 +78,7 @@ class KEGG_PATHWAY(APIView):
     def build_png(self, img, conf_data, gene_color):
         im = PIL.Image.open(img)
         for shape, position, _, title in conf_data:
-            color = self.get_gene_color(title, gene_color)
+            color = utils.get_gene_color(title, gene_color)
             if not color or shape != 'rect':
                 continue
             X, Y, RX, RY = position
@@ -90,7 +93,8 @@ class KEGG_PATHWAY(APIView):
                     for y in range(Y, RY):
                         # pixel > 0 means this point is not black
                         if im.getpixel((x, y))[0] > 0:
-                            ImageDraw.floodfill(im, xy=(x, y), value=color_rgba)
+                            ImageDraw.floodfill(
+                                im, xy=(x, y), value=color_rgba)
             except:
                 print('this color is invalid: {}'.format(color))
 
@@ -107,7 +111,8 @@ class KEGG_PATHWAY(APIView):
 
         svg = Svg(width=width, height=height)
         file.seek(0)
-        png_link = 'data:image/png;base64,' + base64.b64encode(file.read()).decode()
+        png_link = 'data:image/png;base64,' + \
+            base64.b64encode(file.read()).decode()
 
         print(file)
         print(png_link[:100])
@@ -119,7 +124,7 @@ class KEGG_PATHWAY(APIView):
         for shape, position, url, title in conf_data:
             a = A(target='new_window')
             a.set_xlink_title(title)
-            a.set_xlink_href(url)
+            a.set_xlink_href(KEGG_BASE_URL + url)
             svg.addElement(a)
 
             child = self.add_child(shape, position)
@@ -148,56 +153,3 @@ class KEGG_PATHWAY(APIView):
         style = 'fill-opacity: 0'
         child.set_style(style)
         return child
-
-
-    @staticmethod
-    def get_gene_color(title, gene_color, conflict_color='green'):
-        color = None
-        result = re.findall(r'([^\s]+) \((.+?)\)', title)
-        if result:
-            gene_in_title = [each for part in result for each in part]
-            for gene in gene_in_title:
-                if gene_color.get(gene):
-                    # conflict color in a gene family
-                    if color and color != gene_color[gene]:
-                        color = conflict_color
-                    else:
-                        color = gene_color[gene]
-        return color
-
-    def parse_conf(self, conf, keep_shapes=('rect',)):
-        with conf.open() as f:
-            for line in f:
-                linelist = line.decode().strip().split('\t')
-                res = [each for each in re.split(
-                    r'[\s,\(\)]', linelist[0]) if each]
-                shape = res[0]
-                position = list(map(int, res[1:]))
-
-                url = linelist[1]
-                title = linelist[2]
-
-                if shape in keep_shapes:
-                    yield shape, position, url, title
-
-    def parse_gene(self, gene, default_color):
-        """
-        """
-        try:
-            # gene={"red": "K01,K02", "blue": "K03,K04,K05"}
-            # gene=["K01,K02,K03"]&color=red
-            color_genes = json.loads(gene)
-            if isinstance(color_genes, list):
-                gene_color_map = {
-                    g: default_color for g in color_genes[0].split(',')}
-            elif isinstance(color_genes, dict):
-                gene_color_map = {}
-                for color, genes in color_genes.items():
-                    for gene in genes.split(','):
-                        gene_color_map[gene] = color
-            else:
-                return False
-            print('>>> gene colors:', gene_color_map)
-            return gene_color_map
-        except:
-            return False

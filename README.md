@@ -19,7 +19,7 @@ KEGG_DB_PATH = './keggdb'
 2 edit `proj/urls.py`
 ```python
 urlpatterns += [
-    path('kegg', include('django_rest_kegg')),
+    path('kegg/', include('django_rest_kegg.urls')),
 ]
 ```
 

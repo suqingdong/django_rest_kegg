@@ -2,9 +2,8 @@ from pathlib import Path
 
 import requests
 
-from django.apps.config import MODELS_MODULE_NAME
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from django_rest_kegg.models import KEGG_PATHWAY_MODEL
 

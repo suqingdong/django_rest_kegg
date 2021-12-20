@@ -11,7 +11,7 @@ from pysvg.linking import A
 # from pysvg.text import Text
 
 from django.conf import settings
-from django.http import FileResponse, HttpResponse
+from django.http import FileResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -23,7 +23,7 @@ from django_rest_kegg import utils
 KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(settings, 'KEGG_BASE_URL') else 'http://www.kegg.jp'
 
 
-class KEGG_PATHWAY(APIView):
+class KEGG_PATHWAY_VIEW(APIView):
     name = 'KEGG Pathway List'
 
     permission_classes = [permissions.AllowAny]
@@ -110,9 +110,6 @@ class KEGG_PATHWAY(APIView):
         file.seek(0)
         png_link = 'data:image/png;base64,' + \
             base64.b64encode(file.read()).decode()
-
-        print(file)
-        print(png_link[:100])
 
         im = Image(x=0, y=0, width=width, height=height)
         im.set_xlink_href(png_link)

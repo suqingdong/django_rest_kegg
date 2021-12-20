@@ -1,11 +1,7 @@
-from django.urls import path, re_path
-from django.conf.urls import url
+from django.urls import path
+from django_rest_kegg.views import KEGG_PATHWAY_VIEW
 
-
-
-from django_rest_kegg import views
 
 urlpatterns = [
-    path(r'pathway', views.KEGG_PATHWAY.as_view(), name='kegg-pathway'),
-    # path(r'pathway/<str:map_number>', views.KEGG_PATHWAY.as_view(), name='list-pathway'),
+    path(r'pathway', KEGG_PATHWAY_VIEW.as_view(), name='kegg-pathway'),
 ]

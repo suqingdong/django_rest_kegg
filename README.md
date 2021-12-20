@@ -25,8 +25,8 @@ urlpatterns += [
 
 ## Initialize KEGG Database
 ```bash
-# migarate
-# python3 manage.py makemigrations
+# migarate database
+python3 manage.py makemigrations
 python3 manage.py migrate
 
 # download image and conf files for all pathways
@@ -57,7 +57,7 @@ git clone https://www.github.com/suqingdong/django_rest_kegg.git
 
 cd django_rest_kegg/demo
 
-# python3 manage.py makemigrations
+python3 manage.py makemigrations
 
 python3 manage.py migrate
 # Operations to perform:

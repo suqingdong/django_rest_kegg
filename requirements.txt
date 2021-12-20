@@ -1,5 +1,4 @@
 pillow
-django
 requests
 pysvg-py3
-django_restframework
+djangorestframework

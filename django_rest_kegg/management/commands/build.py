@@ -50,6 +50,8 @@ class Command(BaseCommand):
                 print(f'use local image and config for: {map_number}')
             else:
                 print(f'downloading image and config for: {map_number}')
+                download_file(f'{KEGG_REST_URL}/get/{map_number}/image', str(map_image))
+                download_file(f'{KEGG_REST_URL}/get/{map_number}/conf', str(map_conf))
             
             m = KEGG_PATHWAY_MODEL(number=map_number, desc=desc, image=str(map_image), conf=str(map_conf))
             m.save()

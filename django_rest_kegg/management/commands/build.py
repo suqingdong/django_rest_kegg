@@ -22,7 +22,13 @@ def get_pathway_list():
 
 def download_file(url, outfile):
     resp = requests.get(url, stream=True)
-    with open(outfile, 'wb') as out:
+
+    outfile = Path(outfile)
+
+    if not outfile.parent.exists():
+        outfile.parent.mkdir(parents=True)
+
+    with outfile.open('wb') as out:
         for chunk in resp.iter_content(chunk_size=4096):
             out.write(chunk)
 

@@ -20,7 +20,8 @@ from django_rest_kegg.models import KEGG_PATHWAY_MODEL
 from django_rest_kegg import utils
 
 
-KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(settings, 'KEGG_BASE_URL') else 'http://www.kegg.jp'
+KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(
+    settings, 'KEGG_BASE_URL') else 'http://www.kegg.jp'
 
 
 class KEGG_PATHWAY_VIEW(APIView):
@@ -47,7 +48,10 @@ class KEGG_PATHWAY_VIEW(APIView):
                 data = {'error': f'map number not exists: {map_number}'}
                 return Response(data, status=404)
             if ret_type == 'conf':
-                return FileResponse(res.conf.open(), filename=res.number + '.conf.txt')
+                return FileResponse(res.conf.open(),
+                                    content_type='text/plain',
+                                    as_attachment=False,
+                                    filename=res.number + '.conf.txt')
             return self.response_wrapper(res, gene, ret_type, default_color)
 
         all_pathways = KEGG_PATHWAY_MODEL.objects.all()

@@ -1,5 +1,5 @@
 {
-    "version": "1.0.6",
+    "version": "1.0.7",
     "prog": "django_rest_kegg",
     "desc": "an application of kegg pathway for django rest framework",
     "author": "suqingdong",

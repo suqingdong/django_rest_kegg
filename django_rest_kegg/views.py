@@ -70,7 +70,8 @@ class KEGG_PATHWAY_VIEW(APIView):
             gene_color = utils.parse_gene(gene, default_color)
             if not gene_color:
                 return Response({'error': 'bad gene format'}, status=501)
-            conf_data = list(utils.parse_conf(obj.conf, keep_shapes=KEGG_KEEP_SHAPES))
+            conf_data = list(utils.parse_conf(
+                obj.conf, keep_shapes=KEGG_KEEP_SHAPES))
 
             file = self.build_png(obj.image, conf_data, gene_color)
 
@@ -83,26 +84,32 @@ class KEGG_PATHWAY_VIEW(APIView):
 
     def build_png(self, img, conf_data, gene_color):
         im = PIL.Image.open(img)
+        draw = ImageDraw.Draw(im)
         for shape, position, _, title in conf_data:
             color = utils.get_gene_color(title, gene_color)
-            if not color or shape != 'rect':
+            if not color:
                 continue
-            X, Y, RX, RY = position
 
             try:
-                try:
-                    color_rgba = ImageColor.getcolor(color, 'RGBA')
-                except:
-                    color_rgba = ImageColor.getcolor(f'#{color}', 'RGBA')
-                print(color, color_rgba)
+                color_rgba = ImageColor.getcolor(color, 'RGBA')
+            except:
+                color_rgba = ImageColor.getcolor(f'#{color}', 'RGBA')
+
+            if not color_rgba:
+                continue
+
+            if shape == 'rect':
+                X, Y, RX, RY = position
                 for x in range(X, RX):
                     for y in range(Y, RY):
                         # pixel > 0 means this point is not black
                         if im.getpixel((x, y))[0] > 0:
                             ImageDraw.floodfill(
                                 im, xy=(x, y), value=color_rgba)
-            except:
-                print('this color is invalid: {}'.format(color))
+            else:
+                CX, CY, R = position
+                X, Y, RX, RY = CX - R, CY - R, CX + R, CY + R
+                draw.ellipse([(X, Y), (RX, RY)], fill=color_rgba)
 
         file = io.BytesIO()
         im.save(file, format='png')

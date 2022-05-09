@@ -29,7 +29,7 @@ def parse_conf(conf, keep_shapes=('rect',)):
             url = linelist[1]
             title = linelist[2]
 
-            if shape in keep_shapes:
+            if keep_shapes is None or shape in keep_shapes:
                 yield shape, position, url, title
 
 

@@ -23,6 +23,9 @@ from django_rest_kegg import utils
 KEGG_BASE_URL = settings.KEGG_BASE_URL if hasattr(
     settings, 'KEGG_BASE_URL') else 'http://www.kegg.jp'
 
+KEGG_KEEP_SHAPES = settings.KEGG_KEEP_SHAPES if hasattr(
+    settings, 'KEGG_KEEP_SHAPES') else None
+
 
 class KEGG_PATHWAY_VIEW(APIView):
     name = 'KEGG Pathway List'
@@ -67,7 +70,7 @@ class KEGG_PATHWAY_VIEW(APIView):
             gene_color = utils.parse_gene(gene, default_color)
             if not gene_color:
                 return Response({'error': 'bad gene format'}, status=501)
-            conf_data = list(utils.parse_conf(obj.conf))
+            conf_data = list(utils.parse_conf(obj.conf, keep_shapes=KEGG_KEEP_SHAPES))
 
             file = self.build_png(obj.image, conf_data, gene_color)
 
